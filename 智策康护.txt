@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>智策康护 · 临床循证版</title>
+  <style>
+    /* ========== 全局变量与重置 ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: system-ui, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+      background: #fef7f0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 16px;
+      margin: 0;
+    }
+    .app-container {
+      max-width: 420px;
+      width: 100%;
+      background: #fffbf7;
+      border-radius: 32px;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.05);
+      padding: 24px 20px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    /* 标题 */
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #e07b3c;
+      letter-spacing: 2px;
+    }
+    .header .sub {
+      font-size: 0.9rem;
+      color: #b38b6b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge {
+      background: #e07b3c10;
+      color: #e07b3c;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 30px;
+      letter-spacing: 0.5px;
+    }
+    /* 表单卡片 */
+    .form-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .input-row {
+      display: flex;
+      gap: 12px;
+    }
+    .input-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #4a3b2f;
+    }
+    input, textarea {
+      background: #fef9f4;
+      border: 1px solid #eddccb;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-size: 1rem;
+      color: #2d241b;
+      outline: none;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus {
+      border-color: #e07b3c;
+      box-shadow: 0 0 0 3px rgba(224,123,60,0.15);
+    }
+    button {
+      background: #e07b3c;
+      border: none;
+      color: white;
+      font-weight: bold;
+      font-size: 1.1rem;
+      padding: 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 8px 18px rgba(224,123,60,0.3);
+      letter-spacing: 0.5px;
+    }
+    button:active { background: #c96a2e; transform: scale(0.98); }
+    button:disabled { opacity: 0.6; transform: none; }
+    /* 结果卡片 */
+    .results-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .plan-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+    .plan-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #4a3b2f;
+    }
+    .plan-card .content {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: #2d241b;
+      white-space: pre-wrap;
+    }
+    .ref-note {
+      background: #fef7f0;
+      border-radius: 16px;
+      padding: 14px;
+      font-size: 0.8rem;
+      color: #b38b6b;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <h1>智策康护</h1>
+    <div class="sub">🧠 认知训练方案系统 <span class="badge">临床循证版</span></div>
+  </div>
+
+  <div class="form-card">
+    <div class="input-row">
+      <div class="input-group"><label>👤 姓名</label><input type="text" id="elderName" placeholder="姓名"></div>
+      <div class="input-group"><label>🎂 年龄</label><input type="number" id="elderAge" placeholder="年龄" value="78"></div>
+    </div>
+    <div class="input-group"><label>📝 职业 · 人生经历</label><textarea id="elderCareer" rows="2" placeholder="例如：退伍连长、话剧演员、纺织厂工人..."></textarea></div>
+    <div class="input-group"><label>🧠 当前认知状况</label><textarea id="elderCondition" rows="2" placeholder="例如：轻度认知障碍，近期记忆下降..."></textarea></div>
+    <button id="generateBtn"><span>✨</span> 生成循证训练方案</button>
+  </div>
+
+  <div id="resultsContainer" class="results-container"></div>
+  <div style="font-size:0.75rem; color:#b38b6b; text-align:center;">基于FINGER研究 · CST/RT循证框架 · 2025中国专家共识</div>
+</div>
+
+<script>
+  (() => {
+    // ========== 配置 ==========
+    const DEEPSEEK_KEY = 'sk-cabe61ccbd7a4cbfb942f88121936a3';
+    const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions';
+
+    const btn = document.getElementById('generateBtn');
+    const container = document.getElementById('resultsContainer');
+
+    // ========== 职业检测 (优化演员/工人识别) ==========
+    function detectProfession(text) {
+      if (!text) return 'generic';
+      const t = text.toLowerCase();
+      if (t.includes('演员')||t.includes('话剧')||t.includes('戏剧')||t.includes('舞台')||t.includes('文工团')) return 'performer';
+      if (t.includes('军')||t.includes('退伍')||t.includes('老兵')||t.includes('部队')) return 'military';
+      if (t.includes('老师')||t.includes('教师')||t.includes('教授')) return 'teacher';
+      if (t.includes('医生')||t.includes('护士')||t.includes('大夫')) return 'doctor';
+      if (t.includes('厨师')||t.includes('烹饪')||t.includes('后厨')) return 'chef';
+      if (t.includes('工人')||t.includes('纺织')||t.includes('车间')||t.includes('操作工')) return 'worker';
+      if (t.includes('会计')||t.includes('财务')) return 'accountant';
+      return 'generic';
+    }
+
+    // ========== 循证系统提示词 ==========
+    const SYSTEM_PROMPT = `你是认知康复医学专家，严格遵循以下循证框架生成方案：
+
+【核心框架】
+1. 多领域干预：必须包含认知刺激(CST)、怀旧疗法(RT)与身体活动元素。
+2. 结构化怀旧：根据职业选择实施形式：军人(实物/军歌)、演员(台词/情景再现)、工人(工具/工序媒介)、教师(板书/模拟课堂)、厨师(食材/嗅觉刺激)、医生(病例/器械辨识)。
+3. 分级目标：轻度认知障碍(MCI)侧重维持与代偿；痴呆侧重保留功能与情感连接。
+4. 赋能沟通：用职业身份激发尊严感（如“老班长/老师傅/某工”）。
+
+输出格式严格使用四个标题：
+## 🎯 训练目标
+## 📋 每日活动 (7项，含职业怀旧元素)
+## 💬 沟通话术 (5句，体现职业赋能)
+## 📊 评估建议`;
+
+    // ========== 本地预设方案库 (含演员/工人) ==========
+    const PRESET_PLANS = {
+      performer: {
+        goals: `• 维持言语记忆：通过台词与剧情回忆激活前额叶-颞叶网络
+• 提升情绪表达：利用角色共情调节边缘系统
+• 增强社会参与：模拟舞台互动改善社交认知`,
+        activities: `1.🎭 晨间开嗓与台词唤醒（经典剧目片段，锻炼听觉记忆）
+2.📸 老剧照辨识（命名角色与剧情，定向与语义训练）
+3.🎬 情景再现（选安全片段，老人指导照护者表演）
+4.🕺 舞台步态练习（配合配乐行走，双重任务训练）
+5.📖 “我的舞台生涯”口述（结构化怀旧，激活自传体记忆）
+6.👗 戏服布料触觉辨识（感觉统合刺激）
+7.🎵 剧目配乐节奏拍打（注意力与执行功能）`,
+        communication: `1.“X老师，今天这段《雷雨》台词我总记不住，您给指点下。”
+2.用“排练”代替“训练”，尊重其专业身份。
+3.多请教舞台细节：“您当年谢幕时观众掌声响了多久？”
+4.鼓励表现力：“您的眼神特别到位！”
+5.包容重复，用“即兴发挥”化解遗忘尴尬。`,
+        evaluation: `• 每周记录台词记忆完整度
+• 情绪量表评估（NPI-Q）
+• 步态双重任务耗时变化`
+      },
+      worker: {
+        goals: `• 维持程序性记忆：通过工序回忆与工具操作保留基底节功能
+• 强化精细动作：拧、按、握等动作维持手部运动皮层
+• 巩固职业认同：利用劳动成就提升自我价值感`,
+        activities: `1.🔧 工具百宝箱（辨识扳手、纺锤等，实物或图片命名）
+2.📋 工序排排队（将“纺纱→织布→检验”卡片正确排序）
+3.🎵 劳动号子节拍（配合《咱们工人有力量》拍手或踏步）
+4.🧩 零件分类与组装（大号安全积木模拟装配，手眼协调）
+5.⚠️ 安全知识问答（“进车间要戴什么？”“红色按钮是什么？”）
+6.📖 “车间往事”口述（结构化怀旧，战友/工友情谊）
+7.🤲 模拟操作手势（摇纺车、拧阀门，保持肢体记忆）`,
+        communication: `1.“X师傅，这批‘零件’您检验一下，年轻人眼神不如您。”
+2.多用“技术顾问”“把关人”等角色赋予。
+3.耐心倾听劳动细节：“您当年带徒弟最看重什么？”
+4.肯定手工艺：“您这双手当年可是厂里的标杆。”
+5.用“操作规范”引导安全行为。`,
+        evaluation: `• 工序排序正确率
+• 工具命名反应时间
+• 手部精细动作评估（九孔柱测试）`
+      },
+      military: {
+        goals: `• 巩固时间/空间定向：利用军旅记忆强化海马功能
+• 调节情绪：通过战友情怀与军歌降低焦虑
+• 维持执行功能：以内务整理等结构化任务训练`,
+        activities: `1.🌅 军号唤醒（听觉刺激+时间定向）
+2.🫡 内务整理（叠被子，视空间+执行功能）
+3.🎵 军歌合唱（《打靶归来》等，语言记忆+情绪）
+4.🗺️ 地图辨读（简版军事地图，空间导航训练）
+5.🧩 装备拼图（坦克/战机，视空间能力）
+6.📖 “战友情”口述（怀旧疗法核心）
+7.🏅 勋章回忆（实物刺激，自传体记忆）`,
+        communication: `1.“陈老班长，今天的任务交给您指挥。”
+2.使用军衔称呼，维持身份认同。
+3.讨论战术细节：“您觉得这个地形怎么布置？”
+4.肯定纪律性：“您的被子还是这么标准！”
+5.以“战友”口吻交流，建立信任。`,
+        evaluation: `• MMSE简易评估（每月）
+• 情绪日记（每日1-5分）
+• 内务完成度评分`
+      },
+      generic: {
+        goals: `• 维持短期记忆与定向力
+• 提升日常生活自理信心
+• 增加积极情绪表达`,
+        activities: `1.📅 日期天气回顾
+2.🎨 兴趣手工（折纸/编织）
+3.🎵 老歌欣赏
+4.🧩 拼图/数字游戏
+5.🚶 午后散步
+6.📖 人生故事分享
+7.👪 家庭互动游戏`,
+        communication: `1.语气温和，语速放缓。
+2.多肯定：“您做得真好！”
+3.耐心倾听，不打断。
+4.用简单短句。
+5.辅以肢体语言。`,
+        evaluation: `• 每周简易认知评估
+• 每日活动参与度记录`
+      }
+    };
+
+    // 补全其他职业预设方案 (复用原有内容，此处省略teacher/doctor/chef/accountant，实践中保留)
+    PRESET_PLANS.teacher = {
+      goals: `• 维持语言流畅性：通过板书与朗读激活语言中枢
+• 强化文字处理：书写与批改维持视运动协调
+• 巩固职业价值：师生故事提升自我认同`,
+      activities: `1.📝 板书练习（日期、成语，视运动协调）
+2.📚 课文朗读（经典篇目，语言记忆）
+3.👥 “点名”游戏（虚拟学生名单，工作记忆）
+4.✏️ 批改“作业”（找错字，注意力训练）
+5.🎵 课间操节拍（双重任务）
+6.📖 “我的讲台”口述（怀旧）
+7.🧩 教学用具整理（分类与执行功能）`,
+      communication: `1.“X老师，这篇课文我读不好，您示范一下？”
+2.以“学生”姿态请教，激发传授欲。
+3.多讨论教学趣事。
+4.肯定板书：“您写的字还是这么漂亮！”
+5.包容重复讲述，视为“重点强调”。`,
+      evaluation: `• 每周语言流畅度评估
+• 书写工整度评分
+• 情绪状态记录`
+    };
+    PRESET_PLANS.doctor = {
+      goals: `• 维持逻辑推理：通过病例分析训练前额叶
+• 保留专业知识：器械与药品辨识巩固语义记忆
+• 强化共情沟通：医患对话模拟提升社会认知`,
+      activities: `1.📋 “查房”记录（日期、天气，定向）
+2.🩺 器械辨识（听诊器等实物或图片）
+3.💊 药品分类（药名卡片分组）
+4.🧩 病例推理（简易情景题）
+5.🎵 老歌放松
+6.🤝 医患角色扮演（沟通训练）
+7.📖 “从医故事”口述（怀旧）`,
+      communication: `1.“X大夫，这个症状您给诊断一下。”
+2.以“会诊”形式展开互动。
+3.尊重专业判断。
+4.肯定经验：“您这经验太宝贵了。”
+5.耐心倾听过往病例。`,
+      evaluation: `• 每周术语回忆准确率
+• 逻辑推理测试
+• 情绪量表`
+    };
+    PRESET_PLANS.chef = {
+      goals: `• 维持嗅觉与味觉记忆：通过食材辨识激活岛叶与嗅皮质
+• 保留程序性记忆：模拟烹饪动作保持运动程序
+• 提升创造力：摆盘设计训练视空间与发散思维`,
+      activities: `1.🥬 食材辨识（图片/实物分类）
+2.📖 拿手菜谱回忆（步骤口述）
+3.👃 香料闻香（八角、花椒等）
+4.🔪 模拟切菜手势（手部协调）
+5.🍳 安全问答（油锅起火等）
+6.🎨 摆盘设计（彩纸模拟）
+7.🎵 厨房声音回忆（怀旧）`,
+      communication: `1.“X师傅，这道菜火候我总掌握不好。”
+2.以学徒姿态请教。
+3.多讨论调味秘诀。
+4.肯定手艺：“闻着就香！”
+5.包容反复讲解。`,
+      evaluation: `• 食材命名正确率
+• 菜谱步骤完整度
+• 嗅觉辨识测试`
+    };
+    PRESET_PLANS.accountant = {
+      goals: `• 维持数字敏感度：通过计算训练顶叶功能
+• 强化注意力：账目核对训练持续注意
+• 保留职业技能认同：算盘操作维持程序记忆`,
+      activities: `1.📊 记账练习（日期+金额）
+2.🧮 算盘/计算器操作
+3.🔢 数字广度记忆
+4.📋 账目核对（找差异）
+5.🧩 数独/数字填空
+6.📖 工作趣事口述
+7.🎵 老歌欣赏`,
+      communication: `1.“X会计，这笔账您核对一下。”
+2.以“审计”口吻互动。
+3.肯定细致：“您算得真准！”
+4.耐心讨论财务往事。
+5.包容计算慢。`,
+      evaluation: `• 数字广度变化
+• 计算正确率
+• 注意力维持时间`
+    };
+
+    // ========== 辅助函数 ==========
+    function showLoading() {
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> 生成中...';
+    }
+    function hideLoading() {
+      btn.disabled = false;
+      btn.innerHTML = '<span>✨</span> 生成循证训练方案';
+    }
+
+    function renderPlan(plan) {
+      container.innerHTML = '';
+      const sections = [
+        { icon: '🎯', title: '训练目标', content: plan.goals },
+        { icon: '📋', title: '每日活动', content: plan.activities },
+        { icon: '💬', title: '沟通话术', content: plan.communication },
+        { icon: '📊', title: '评估建议', content: plan.evaluation }
+      ];
+      sections.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'plan-card';
+        card.innerHTML = `<h3>${s.icon} ${s.title}</h3><div class="content">${s.content}</div>`;
+        container.appendChild(card);
+      });
+      const ref = document.createElement('div');
+      ref.className = 'ref-note';
+      ref.innerText = '📚 循证来源：FINGER多领域干预研究 | CST/RT系统综述 | 2025中国专家共识';
+      container.appendChild(ref);
+    }
+
+    // ========== 核心流程 ==========
+    async function handleGenerate() {
+      const name = document.getElementById('elderName').value.trim() || '长辈';
+      const age = document.getElementById('elderAge').value.trim() || '未填';
+      const career = document.getElementById('elderCareer').value.trim();
+      const condition = document.getElementById('elderCondition').value.trim() || '未填';
+
+      const profession = detectProfession(career);
+      const userMsg = `老人：${name}，${age}岁。职业经历：${career || '未提供'}。认知状况：${condition}。请生成方案。`;
+
+      showLoading();
+      try {
+        const resp = await fetch(DEEPSEEK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${DEEPSEEK_KEY}` },
+          body: JSON.stringify({
+            model: 'deepseek-chat',
+            messages: [{ role: 'system', content: SYSTEM_PROMPT }, { role: 'user', content: userMsg }],
+            temperature: 0.7, max_tokens: 2500
+          })
+        });
+        if (!resp.ok) throw new Error('API错误');
+        const data = await resp.json();
+        const raw = data.choices[0].message.content;
+        // 简单解析
+        const goals = (raw.match(/训练目标([\s\S]*?)(?=每日活动|$)/i) || [])[1] || '';
+        const activities = (raw.match(/每日活动([\s\S]*?)(?=沟通话术|$)/i) || [])[1] || '';
+        const communication = (raw.match(/沟通话术([\s\S]*?)(?=评估建议|$)/i) || [])[1] || '';
+        const evaluation = (raw.match(/评估建议([\s\S]*?)$/i) || [])[1] || '';
+        renderPlan({ goals: goals.trim(), activities: activities.trim(), communication: communication.trim(), evaluation: evaluation.trim() });
+      } catch (e) {
+        console.warn('使用本地预设方案', e);
+        const plan = PRESET_PLANS[profession] || PRESET_PLANS.generic;
+        renderPlan(plan);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    btn.addEventListener('click', handleGenerate);
+  })();
+</script>
+</body>
+</html>
